@@ -1,0 +1,355 @@
+#include "http-handler.hpp"
+#include <curl/curl.h>
+#include <cstring>
+
+namespace berrystreamcam {
+
+// Callback for CURL to write received data
+static size_t write_callback(void* ptr, size_t size, size_t nmemb, void* userdata)
+{
+    HttpHandler* handler = static_cast<HttpHandler*>(userdata);
+
+    // Check if still connected - return 0 to abort transfer
+    if (!handler->is_connected()) {
+        return 0; // Abort transfer
+    }
+
+    size_t total_size = size * nmemb;
+
+    // Process the received data based on protocol type
+    handler->process_data(static_cast<const uint8_t*>(ptr), total_size);
+
+    return total_size;
+}
+
+HttpHandler::HttpHandler()
+    : curl_handle_(nullptr)
+    , connected_(false)
+    , receive_buffer_(nullptr)
+    , receive_buffer_size_(0)
+    , receive_buffer_used_(0)
+    , protocol_type_(ProtocolType::UNKNOWN)
+{
+    receive_buffer_size_ = FRAME_BUFFER_SIZE;
+    receive_buffer_ = new uint8_t[receive_buffer_size_];
+
+    curl_handle_ = curl_easy_init();
+
+    BLOG_DEBUG("HTTP handler created");
+}
+
+HttpHandler::~HttpHandler()
+{
+    // Force disconnect first
+    connected_ = false;
+
+    // Disconnect will cleanup CURL and join thread
+    disconnect();
+
+    // Cleanup buffer
+    delete[] receive_buffer_;
+}
+
+bool HttpHandler::connect(const std::string& url, ProtocolType type)
+{
+    BLOG_INFO("Connecting to HTTP stream: %s", url.c_str());
+
+    url_ = url;
+    protocol_type_ = type;
+
+    if (!curl_handle_) {
+        BLOG_ERROR("CURL not initialized");
+        return false;
+    }
+
+    CURL* curl = static_cast<CURL*>(curl_handle_);
+
+    // Configure CURL for streaming
+    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, this);
+    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 0L); // No timeout for streaming
+    curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 10L);
+    curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L); // Don't use signals for timeout
+
+    // For MJPEG, we need special handling
+    if (type == ProtocolType::HTTP_MJPEG) {
+        BLOG_DEBUG("Configured for MJPEG stream");
+    } else if (type == ProtocolType::HTTP_RAW_H264) {
+        BLOG_DEBUG("Configured for Raw H.264 stream");
+    }
+
+    connected_ = true;
+
+    // Start streaming in a separate thread
+    streaming_thread_ = std::thread([this]() {
+        if (protocol_type_ == ProtocolType::HTTP_RAW_H264) {
+            receive_raw_h264();
+        } else if (protocol_type_ == ProtocolType::HTTP_MJPEG) {
+            receive_mjpeg();
+        }
+    });
+
+    BLOG_INFO("HTTP connection established");
+    return true;
+}
+
+void HttpHandler::disconnect()
+{
+    if (!connected_) return;
+
+    BLOG_INFO("Disconnecting HTTP");
+
+    connected_ = false;
+
+    // Force CURL to abort by closing the connection
+    if (curl_handle_) {
+        // This will cause curl_easy_perform() to abort immediately
+        curl_easy_cleanup(static_cast<CURL*>(curl_handle_));
+        curl_handle_ = nullptr;
+    }
+
+    // Wait for streaming thread to finish (should exit quickly now)
+    if (streaming_thread_.joinable()) {
+        streaming_thread_.join();
+    }
+
+    // CURL cleanup is handled in destructor
+
+    // Clear frame queue and free memory
+    std::lock_guard<std::mutex> lock(queue_mutex_);
+    while (!frame_queue_.empty()) {
+        VideoFrame& frame = frame_queue_.front();
+        delete[] frame.data;
+        frame_queue_.pop();
+    }
+}
+
+bool HttpHandler::is_connected() const
+{
+    return connected_;
+}
+
+bool HttpHandler::receive_frame(VideoFrame& frame)
+{
+    std::lock_guard<std::mutex> lock(queue_mutex_);
+
+    if (frame_queue_.empty()) {
+        return false;
+    }
+
+    frame = frame_queue_.front();
+    frame_queue_.pop();
+
+    return true;
+}
+
+void HttpHandler::receive_raw_h264()
+{
+    if (!connected_) {
+        return;
+    }
+    
+    CURL* curl = static_cast<CURL*>(curl_handle_);
+    if (!curl) {
+        return;
+    }
+
+    BLOG_DEBUG("Starting Raw H.264 HTTP stream reception");
+
+    // Perform HTTP request (blocking call)
+    // This will be interrupted when connected_ becomes false
+    CURLcode res = curl_easy_perform(curl);
+
+    if (res != CURLE_OK && connected_) {
+        // Only log error if we're still supposed to be connected
+        BLOG_WARNING("HTTP streaming ended: %s", curl_easy_strerror(res));
+        connected_ = false;
+    }
+}
+
+void HttpHandler::process_data(const uint8_t* data, size_t length)
+{
+    if (!connected_) return;
+    
+    // Don't process if queue is full - let consumer catch up
+    {
+        std::lock_guard<std::mutex> lock(queue_mutex_);
+        if (frame_queue_.size() >= 30) {
+            return; // Skip processing until queue drains
+        }
+    }
+
+    // Add received data to buffer
+    if (receive_buffer_used_ + length > receive_buffer_size_) {
+        // Buffer overflow protection - discard old data and keep recent data
+        static int overflow_count = 0;
+        if (++overflow_count % 100 == 0) {
+            BLOG_WARNING("HTTP buffer overflow %d times (decoder can't keep up)", overflow_count);
+        }
+        
+        // Keep last 256KB to preserve more NAL units
+        size_t keep_size = 262144;
+        if (receive_buffer_used_ > keep_size) {
+            memmove(receive_buffer_, receive_buffer_ + (receive_buffer_used_ - keep_size), keep_size);
+            receive_buffer_used_ = keep_size;
+        } else {
+            // If buffer is smaller than keep_size, just reset
+            receive_buffer_used_ = 0;
+        }
+    }
+
+    memcpy(receive_buffer_ + receive_buffer_used_, data, length);
+    receive_buffer_used_ += length;
+
+    // Process H.264 data based on protocol type
+    if (protocol_type_ == ProtocolType::HTTP_RAW_H264) {
+        parse_h264_stream();
+    } else if (protocol_type_ == ProtocolType::HTTP_MJPEG) {
+        parse_mjpeg_stream();
+    }
+}
+
+void HttpHandler::parse_h264_stream()
+{
+    // Look for H.264 NAL unit start codes (0x00 0x00 0x00 0x01 or 0x00 0x00 0x01)
+    const uint8_t start_code_4[] = {0x00, 0x00, 0x00, 0x01};
+    const uint8_t start_code_3[] = {0x00, 0x00, 0x01};
+
+    size_t pos = 0;
+    while (pos + 4 <= receive_buffer_used_) {
+        // Check for 4-byte start code
+        if (memcmp(receive_buffer_ + pos, start_code_4, 4) == 0) {
+            // Found start of NAL unit
+            size_t next_pos = pos + 4;
+
+            // Find next start code
+            size_t nal_end = receive_buffer_used_;
+            for (size_t search = next_pos; search + 4 <= receive_buffer_used_; search++) {
+                if (memcmp(receive_buffer_ + search, start_code_4, 4) == 0 ||
+                    memcmp(receive_buffer_ + search, start_code_3, 3) == 0) {
+                    nal_end = search;
+                    break;
+                }
+            }
+
+            // Extract complete NAL unit (only if we found the end)
+            size_t nal_size = nal_end - pos;
+            // Only process if we have a complete NAL unit (not at buffer end)
+            if (nal_end < receive_buffer_used_ && nal_size > 4 && nal_size < receive_buffer_size_) {
+                VideoFrame frame;
+                frame.data = new uint8_t[nal_size];
+                memcpy(frame.data, receive_buffer_ + pos, nal_size);
+                frame.size = nal_size;
+                frame.timestamp = std::chrono::system_clock::now().time_since_epoch().count();
+                frame.is_keyframe = ((receive_buffer_[pos + 4] & 0x1F) == 5); // IDR frame
+
+                std::lock_guard<std::mutex> lock(queue_mutex_);
+                // Limit queue size to prevent memory overflow
+                if (frame_queue_.size() >= 30) {
+                    // Drop oldest frame if queue is full
+                    VideoFrame& old_frame = frame_queue_.front();
+                    delete[] old_frame.data;
+                    frame_queue_.pop();
+                }
+                frame_queue_.push(frame);
+            }
+
+            pos = nal_end;
+        } else {
+            pos++;
+        }
+    }
+
+    // Keep remaining data for next iteration
+    if (pos > 0 && pos < receive_buffer_used_) {
+        size_t remaining = receive_buffer_used_ - pos;
+        memmove(receive_buffer_, receive_buffer_ + pos, remaining);
+        receive_buffer_used_ = remaining;
+    }
+}
+
+void HttpHandler::receive_mjpeg()
+{
+    if (!curl_handle_) return;
+
+    CURL* curl = static_cast<CURL*>(curl_handle_);
+
+    // Start the streaming request
+    CURLcode res = curl_easy_perform(curl);
+
+    if (res != CURLE_OK) {
+        BLOG_ERROR("MJPEG streaming failed: %s", curl_easy_strerror(res));
+        connected_ = false;
+    }
+}
+
+void HttpHandler::parse_mjpeg_stream()
+{
+    // MJPEG uses multipart/x-mixed-replace format
+    // For now, just look for JPEG markers (0xFF 0xD8 = SOI, 0xFF 0xD9 = EOI)
+
+    size_t pos = 0;
+    while (pos + 2 < receive_buffer_used_) {
+        // Look for JPEG Start of Image (SOI)
+        if (receive_buffer_[pos] == 0xFF && receive_buffer_[pos + 1] == 0xD8) {
+            // Found start of JPEG
+            size_t jpeg_start = pos;
+
+            // Look for End of Image (EOI)
+            for (size_t search = pos + 2; search + 2 <= receive_buffer_used_; search++) {
+                if (receive_buffer_[search] == 0xFF && receive_buffer_[search + 1] == 0xD9) {
+                    size_t jpeg_end = search + 2;
+                    size_t jpeg_size = jpeg_end - jpeg_start;
+
+                    // Extract complete JPEG frame
+                    VideoFrame frame;
+                    frame.data = new uint8_t[jpeg_size];
+                    memcpy(frame.data, receive_buffer_ + jpeg_start, jpeg_size);
+                    frame.size = jpeg_size;
+                    frame.timestamp = std::chrono::system_clock::now().time_since_epoch().count();
+                    frame.is_keyframe = true; // JPEG frames are always keyframes
+
+                    std::lock_guard<std::mutex> lock(queue_mutex_);
+                    // Limit queue size to prevent memory overflow
+                    if (frame_queue_.size() >= 30) {
+                        VideoFrame& old_frame = frame_queue_.front();
+                        delete[] old_frame.data;
+                        frame_queue_.pop();
+                    }
+                    frame_queue_.push(frame);
+
+                    pos = jpeg_end;
+                    break;
+                }
+            }
+
+            if (pos == jpeg_start) {
+                // Incomplete JPEG, wait for more data
+                break;
+            }
+        } else {
+            pos++;
+        }
+    }
+
+    // Keep remaining data
+    if (pos > 0 && pos < receive_buffer_used_) {
+        size_t remaining = receive_buffer_used_ - pos;
+        memmove(receive_buffer_, receive_buffer_ + pos, remaining);
+        receive_buffer_used_ = remaining;
+    }
+}
+
+void HttpHandler::parse_mjpeg_boundary(const uint8_t* data, size_t length)
+{
+    // Parse MJPEG boundary markers and extract frames
+    // This is a complex parser that would handle:
+    // - Finding boundary markers
+    // - Extracting content headers
+    // - Isolating JPEG data
+    // - Creating VideoFrame structures
+}
+
+} // namespace berrystreamcam

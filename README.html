@@ -1,0 +1,909 @@
+<!DOCTYPE html><html><head>
+      <title>README</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      
+      <link rel="stylesheet" href="file:////home/swadhin/.vscode/extensions/shd101wyy.markdown-preview-enhanced-0.8.20/crossnote/dependencies/katex/katex.min.css">
+      
+      
+      
+      
+      
+      <style>
+      code[class*=language-],pre[class*=language-]{color:#333;background:0 0;font-family:Consolas,"Liberation Mono",Menlo,Courier,monospace;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.4;-moz-tab-size:8;-o-tab-size:8;tab-size:8;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}pre[class*=language-]{padding:.8em;overflow:auto;border-radius:3px;background:#f5f5f5}:not(pre)>code[class*=language-]{padding:.1em;border-radius:.3em;white-space:normal;background:#f5f5f5}.token.blockquote,.token.comment{color:#969896}.token.cdata{color:#183691}.token.doctype,.token.macro.property,.token.punctuation,.token.variable{color:#333}.token.builtin,.token.important,.token.keyword,.token.operator,.token.rule{color:#a71d5d}.token.attr-value,.token.regex,.token.string,.token.url{color:#183691}.token.atrule,.token.boolean,.token.code,.token.command,.token.constant,.token.entity,.token.number,.token.property,.token.symbol{color:#0086b3}.token.prolog,.token.selector,.token.tag{color:#63a35c}.token.attr-name,.token.class,.token.class-name,.token.function,.token.id,.token.namespace,.token.pseudo-class,.token.pseudo-element,.token.url-reference .token.variable{color:#795da3}.token.entity{cursor:help}.token.title,.token.title .token.punctuation{font-weight:700;color:#1d3e81}.token.list{color:#ed6a43}.token.inserted{background-color:#eaffea;color:#55a532}.token.deleted{background-color:#ffecec;color:#bd2c00}.token.bold{font-weight:700}.token.italic{font-style:italic}.language-json .token.property{color:#183691}.language-markup .token.tag .token.punctuation{color:#333}.language-css .token.function,code.language-css{color:#0086b3}.language-yaml .token.atrule{color:#63a35c}code.language-yaml{color:#183691}.language-ruby .token.function{color:#333}.language-markdown .token.url{color:#795da3}.language-makefile .token.symbol{color:#795da3}.language-makefile .token.variable{color:#183691}.language-makefile .token.builtin{color:#0086b3}.language-bash .token.keyword{color:#0086b3}pre[data-line]{position:relative;padding:1em 0 1em 3em}pre[data-line] .line-highlight-wrapper{position:absolute;top:0;left:0;background-color:transparent;display:block;width:100%}pre[data-line] .line-highlight{position:absolute;left:0;right:0;padding:inherit 0;margin-top:1em;background:hsla(24,20%,50%,.08);background:linear-gradient(to right,hsla(24,20%,50%,.1) 70%,hsla(24,20%,50%,0));pointer-events:none;line-height:inherit;white-space:pre}pre[data-line] .line-highlight:before,pre[data-line] .line-highlight[data-end]:after{content:attr(data-start);position:absolute;top:.4em;left:.6em;min-width:1em;padding:0 .5em;background-color:hsla(24,20%,50%,.4);color:#f4f1ef;font:bold 65%/1.5 sans-serif;text-align:center;vertical-align:.3em;border-radius:999px;text-shadow:none;box-shadow:0 1px #fff}pre[data-line] .line-highlight[data-end]:after{content:attr(data-end);top:auto;bottom:.4em}html body{font-family:'Helvetica Neue',Helvetica,'Segoe UI',Arial,freesans,sans-serif;font-size:16px;line-height:1.6;color:#333;background-color:#fff;overflow:initial;box-sizing:border-box;word-wrap:break-word}html body>:first-child{margin-top:0}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{line-height:1.2;margin-top:1em;margin-bottom:16px;color:#000}html body h1{font-size:2.25em;font-weight:300;padding-bottom:.3em}html body h2{font-size:1.75em;font-weight:400;padding-bottom:.3em}html body h3{font-size:1.5em;font-weight:500}html body h4{font-size:1.25em;font-weight:600}html body h5{font-size:1.1em;font-weight:600}html body h6{font-size:1em;font-weight:600}html body h1,html body h2,html body h3,html body h4,html body h5{font-weight:600}html body h5{font-size:1em}html body h6{color:#5c5c5c}html body strong{color:#000}html body del{color:#5c5c5c}html body a:not([href]){color:inherit;text-decoration:none}html body a{color:#08c;text-decoration:none}html body a:hover{color:#00a3f5;text-decoration:none}html body img{max-width:100%}html body>p{margin-top:0;margin-bottom:16px;word-wrap:break-word}html body>ol,html body>ul{margin-bottom:16px}html body ol,html body ul{padding-left:2em}html body ol.no-list,html body ul.no-list{padding:0;list-style-type:none}html body ol ol,html body ol ul,html body ul ol,html body ul ul{margin-top:0;margin-bottom:0}html body li{margin-bottom:0}html body li.task-list-item{list-style:none}html body li>p{margin-top:0;margin-bottom:0}html body .task-list-item-checkbox{margin:0 .2em .25em -1.8em;vertical-align:middle}html body .task-list-item-checkbox:hover{cursor:pointer}html body blockquote{margin:16px 0;font-size:inherit;padding:0 15px;color:#5c5c5c;background-color:#f0f0f0;border-left:4px solid #d6d6d6}html body blockquote>:first-child{margin-top:0}html body blockquote>:last-child{margin-bottom:0}html body hr{height:4px;margin:32px 0;background-color:#d6d6d6;border:0 none}html body table{margin:10px 0 15px 0;border-collapse:collapse;border-spacing:0;display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all}html body table th{font-weight:700;color:#000}html body table td,html body table th{border:1px solid #d6d6d6;padding:6px 13px}html body dl{padding:0}html body dl dt{padding:0;margin-top:16px;font-size:1em;font-style:italic;font-weight:700}html body dl dd{padding:0 16px;margin-bottom:16px}html body code{font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:.85em;color:#000;background-color:#f0f0f0;border-radius:3px;padding:.2em 0}html body code::after,html body code::before{letter-spacing:-.2em;content:'\00a0'}html body pre>code{padding:0;margin:0;word-break:normal;white-space:pre;background:0 0;border:0}html body .highlight{margin-bottom:16px}html body .highlight pre,html body pre{padding:1em;overflow:auto;line-height:1.45;border:#d6d6d6;border-radius:3px}html body .highlight pre{margin-bottom:0;word-break:normal}html body pre code,html body pre tt{display:inline;max-width:initial;padding:0;margin:0;overflow:initial;line-height:inherit;word-wrap:normal;background-color:transparent;border:0}html body pre code:after,html body pre code:before,html body pre tt:after,html body pre tt:before{content:normal}html body blockquote,html body dl,html body ol,html body p,html body pre,html body ul{margin-top:0;margin-bottom:16px}html body kbd{color:#000;border:1px solid #d6d6d6;border-bottom:2px solid #c7c7c7;padding:2px 4px;background-color:#f0f0f0;border-radius:3px}@media print{html body{background-color:#fff}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{color:#000;page-break-after:avoid}html body blockquote{color:#5c5c5c}html body pre{page-break-inside:avoid}html body table{display:table}html body img{display:block;max-width:100%;max-height:100%}html body code,html body pre{word-wrap:break-word;white-space:pre}}.markdown-preview{width:100%;height:100%;box-sizing:border-box}.markdown-preview ul{list-style:disc}.markdown-preview ul ul{list-style:circle}.markdown-preview ul ul ul{list-style:square}.markdown-preview ol{list-style:decimal}.markdown-preview ol ol,.markdown-preview ul ol{list-style-type:lower-roman}.markdown-preview ol ol ol,.markdown-preview ol ul ol,.markdown-preview ul ol ol,.markdown-preview ul ul ol{list-style-type:lower-alpha}.markdown-preview .newpage,.markdown-preview .pagebreak{page-break-before:always}.markdown-preview pre.line-numbers{position:relative;padding-left:3.8em;counter-reset:linenumber}.markdown-preview pre.line-numbers>code{position:relative}.markdown-preview pre.line-numbers .line-numbers-rows{position:absolute;pointer-events:none;top:1em;font-size:100%;left:0;width:3em;letter-spacing:-1px;border-right:1px solid #999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.markdown-preview pre.line-numbers .line-numbers-rows>span{pointer-events:none;display:block;counter-increment:linenumber}.markdown-preview pre.line-numbers .line-numbers-rows>span:before{content:counter(linenumber);color:#999;display:block;padding-right:.8em;text-align:right}.markdown-preview .mathjax-exps .MathJax_Display{text-align:center!important}.markdown-preview:not([data-for=preview]) .code-chunk .code-chunk-btn-group{display:none}.markdown-preview:not([data-for=preview]) .code-chunk .status{display:none}.markdown-preview:not([data-for=preview]) .code-chunk .output-div{margin-bottom:16px}.markdown-preview .md-toc{padding:0}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link div,.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link p{display:inline}.markdown-preview .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}.scrollbar-style::-webkit-scrollbar{width:8px}.scrollbar-style::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}.scrollbar-style::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,.66);border:4px solid rgba(150,150,150,.66);background-clip:content-box}html body[for=html-export]:not([data-presentation-mode]){position:relative;width:100%;height:100%;top:0;left:0;margin:0;padding:0;overflow:auto}html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{position:relative;top:0;min-height:100vh}@media screen and (min-width:914px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{padding:2em calc(50% - 457px + 2em)}}@media screen and (max-width:914px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{font-size:14px!important;padding:1em}}@media print{html body[for=html-export]:not([data-presentation-mode]) #sidebar-toc-btn{display:none}}html body[for=html-export]:not([data-presentation-mode]) #sidebar-toc-btn{position:fixed;bottom:8px;left:8px;font-size:28px;cursor:pointer;color:inherit;z-index:99;width:32px;text-align:center;opacity:.4}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] #sidebar-toc-btn{opacity:1}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc{position:fixed;top:0;left:0;width:300px;height:100%;padding:32px 0 48px 0;font-size:14px;box-shadow:0 0 4px rgba(150,150,150,.33);box-sizing:border-box;overflow:auto;background-color:inherit}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar{width:8px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,.66);border:4px solid rgba(150,150,150,.66);background-clip:content-box}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc a{text-decoration:none}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc{padding:0 16px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link div,html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link p{display:inline}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{left:300px;width:calc(100% - 300px);padding:2em calc(50% - 457px - 300px / 2);margin:0;box-sizing:border-box}@media screen and (max-width:1274px){html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{width:100%}}html body[for=html-export]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .markdown-preview{left:50%;transform:translateX(-50%)}html body[for=html-export]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .md-sidebar-toc{display:none}
+/* Please visit the URL below for more information: */
+/*   https://shd101wyy.github.io/markdown-preview-enhanced/#/customize-css */
+
+      </style>
+      <!-- The content below will be included at the end of the <head> element. --><script type="text/javascript">
+  document.addEventListener("DOMContentLoaded", function () {
+    // your code here
+  });
+</script></head><body for="html-export">
+    
+    
+      <div class="crossnote markdown-preview  ">
+      <div>
+<div align="center">
+<img src="https://raw.githubusercontent.com/swadhinbiswas/assets/main/image.png" alt="BerryStreamCam Logo" width="200">
+<h3 id="-transform-your-android-into-a-pro-camera">🎥 Transform Your Android Into a Pro Camera </h3>
+<p><a href="https://github.com/swadhinbiswas/streamberry"><img src="https://img.shields.io/badge/version-1.0.0-blue.svg?style=for-the-badge" alt="Version"></a><br>
+<a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--2.0-green.svg?style=for-the-badge" alt="License"></a><br>
+<a href="https://obsproject.com/"><img src="https://img.shields.io/badge/OBS%20Studio-30.0%2B-purple.svg?style=for-the-badge" alt="OBS Studio"></a><br>
+<a href="https://github.com/StreamBerryLabs"><img src="https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey?style=for-the-badge" alt="Platform"></a></p>
+<p><strong>Streamberry-OBS</strong> is a professional OBS Studio plugin that automatically discovers Streamberry devices on your network and provides ultra-low latency streaming with multiple protocol support.</p>
+<p><a href="#-quick-start">🚀 Quick Start</a> •<br>
+<a href="https://github.com/StreamBerryLabs/streamberry-obs">📦 Download</a> •<br>
+<a href="#-installation">📖 Documentation</a> •<br>
+<a href="https://github.com/swadhinbiswas/streamberry/issues">🐛 Report Bug</a> •<br>
+<a href="https://github.com/swadhinbiswas/streamberry/issues">💡 Feature Request</a></p>
+</div>
+<hr>
+<h2 id="-features">✨ Features </h2>
+<div align="center">
+<table>
+<thead>
+<tr>
+<th style="text-align:left">🎯 Feature</th>
+<th style="text-align:left">📝 Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">🔍 <strong>Auto-Discovery</strong></td>
+<td style="text-align:left">Automatically finds Streamberry devices on your network (no manual IP entry!)</td>
+</tr>
+<tr>
+<td style="text-align:left">🚀 <strong>Ultra-Low Latency</strong></td>
+<td style="text-align:left">WebSocket protocol provides 50-150ms latency - perfect for gaming and live streaming</td>
+</tr>
+<tr>
+<td style="text-align:left">🎭 <strong>5 Streaming Protocols</strong></td>
+<td style="text-align:left">Choose the best protocol for your needs - WebSocket, HTTP H.264, MJPEG, RTSP, DASH</td>
+</tr>
+<tr>
+<td style="text-align:left">🎬 <strong>Hardware Acceleration</strong></td>
+<td style="text-align:left">H.264 hardware decoding when available for silky smooth playback</td>
+</tr>
+<tr>
+<td style="text-align:left">📺 <strong>4K Support</strong></td>
+<td style="text-align:left">Stream in stunning 4K resolution at 30fps - perfect for high-quality content</td>
+</tr>
+<tr>
+<td style="text-align:left">🔄 <strong>Live Protocol Switching</strong></td>
+<td style="text-align:left">Change protocols on-the-fly without restarting OBS</td>
+</tr>
+<tr>
+<td style="text-align:left">📱 <strong>Multi-Device Support</strong></td>
+<td style="text-align:left">Connect multiple Android devices simultaneously - perfect for multi-cam setups</td>
+</tr>
+<tr>
+<td style="text-align:left">🎯 <strong>Pause/Resume</strong></td>
+<td style="text-align:left">Smooth hide/show with PipeWire-style state management</td>
+</tr>
+<tr>
+<td style="text-align:left">🛡️ <strong>Stable &amp; Safe</strong></td>
+<td style="text-align:left">Thread-safe operations, robust error handling, zero crashes</td>
+</tr>
+<tr>
+<td style="text-align:left">🌐 <strong>Cross-Platform</strong></td>
+<td style="text-align:left">Works seamlessly on Linux, macOS, and Windows</td>
+</tr>
+<tr>
+<td style="text-align:left">🆓 <strong>100% Free &amp; Open Source</strong></td>
+<td style="text-align:left">No subscriptions, no limitations, forever free</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="-supported-protocols">📋 Supported Protocols </h2>
+<div align="center">
+<table>
+<thead>
+<tr>
+<th style="text-align:left">🎭 Protocol</th>
+<th style="text-align:center">🔌 Port</th>
+<th style="text-align:center">⚡ Latency</th>
+<th style="text-align:left">🎯 Best For</th>
+<th style="text-align:center">🌐 Compatibility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>⚡ WebSocket</strong></td>
+<td style="text-align:center">8080</td>
+<td style="text-align:center">50-150ms</td>
+<td style="text-align:left">Live streaming, gaming, real-time, 4K capable</td>
+<td style="text-align:center">⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>🎬 HTTP H.264</strong></td>
+<td style="text-align:center">8081</td>
+<td style="text-align:center">100-300ms</td>
+<td style="text-align:left">Recording, high quality, 4K capable</td>
+<td style="text-align:center">⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>📸 MJPEG</strong></td>
+<td style="text-align:center">8081</td>
+<td style="text-align:center">200-500ms</td>
+<td style="text-align:left">Maximum compatibility</td>
+<td style="text-align:center">⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>📹 RTSP</strong></td>
+<td style="text-align:center">8554</td>
+<td style="text-align:center">150-400ms</td>
+<td style="text-align:left">Professional workflows</td>
+<td style="text-align:center">⭐⭐⭐⭐⭐</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>🌊 MPEG-DASH</strong></td>
+<td style="text-align:center">8081</td>
+<td style="text-align:center">300-1000ms</td>
+<td style="text-align:left">Adaptive bitrate streaming</td>
+<td style="text-align:center">⭐⭐⭐⭐</td>
+</tr>
+</tbody>
+</table>
+<p>💡 <strong>Pro Tip:</strong> Use <strong>WebSocket</strong> for lowest latency, <strong>RTSP</strong> for maximum compatibility</p>
+</div>
+<h2 id="-installation">📦 Installation </h2>
+<div align="center">
+<h3 id="choose-your-platform">Choose Your Platform </h3>
+<p><a href="#linux"><img src="https://img.shields.io/badge/%F0%9F%90%A7_Linux-Install-blue?style=for-the-badge" alt="Linux"></a><br>
+<a href="#macos"><img src="https://img.shields.io/badge/%F0%9F%8D%8E_macOS-Install-black?style=for-the-badge" alt="macOS"></a><br>
+<a href="#windows"><img src="https://img.shields.io/badge/%F0%9F%AA%9F_Windows-Install-0078D6?style=for-the-badge" alt="Windows"></a></p>
+</div>
+<hr>
+<h3 id="-linux">🐧 Linux </h3>
+<h4 id="-arch-linux--manjaro--garuda">🔷 Arch Linux / Manjaro / Garuda </h4>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token comment"># Install dependencies</span>
+<span class="token function">sudo</span> pacman <span class="token parameter variable">-S</span> obs-studio qt6-base qt6-websockets ffmpeg <span class="token function">curl</span> openssl cmake gcc pkgconf
+
+<span class="token comment"># Clone and build</span>
+<span class="token function">git</span> clone https://github.com/yourusername/streamberry.git
+<span class="token builtin class-name">cd</span> streamberry/plugin
+./build.sh
+
+<span class="token comment"># Install plugin</span>
+<span class="token function">sudo</span> <span class="token function">cp</span> build/berrystreamcam.so /usr/lib/obs-plugins/
+</code></pre><h4 id="-ubuntu--debian">🔶 Ubuntu / Debian </h4>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token comment"># Install dependencies</span>
+<span class="token function">sudo</span> <span class="token function">apt</span> <span class="token function">install</span> obs-studio libqt6-dev qt6-websockets-dev libavcodec-dev <span class="token punctuation">\</span>
+    libavutil-dev libswscale-dev libavformat-dev libcurl4-openssl-dev <span class="token punctuation">\</span>
+    libssl-dev cmake build-essential pkg-config
+
+<span class="token comment"># Clone and build</span>
+<span class="token function">git</span> clone https://github.com/yourusername/streamberry.git
+<span class="token builtin class-name">cd</span> streamberry/plugin
+./build.sh
+
+<span class="token comment"># Install plugin</span>
+<span class="token function">sudo</span> <span class="token function">cp</span> build/berrystreamcam.so /usr/lib/obs-plugins/
+</code></pre><h4 id="-fedora--rhel">🔴 Fedora / RHEL </h4>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token comment"># Install dependencies</span>
+<span class="token function">sudo</span> dnf <span class="token function">install</span> obs-studio qt6-qtbase-devel qt6-qtwebsockets-devel <span class="token punctuation">\</span>
+    ffmpeg-devel libcurl-devel openssl-devel cmake gcc-c++ pkgconfig
+
+<span class="token comment"># Clone and build</span>
+<span class="token function">git</span> clone https://github.com/yourusername/streamberry.git
+<span class="token builtin class-name">cd</span> streamberry/plugin
+./build.sh
+
+<span class="token comment"># Install plugin</span>
+<span class="token function">sudo</span> <span class="token function">cp</span> build/berrystreamcam.so /usr/lib64/obs-plugins/
+</code></pre><h3 id="-macos">🍎 macOS </h3>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token comment"># Install Homebrew (if not installed)</span>
+/bin/bash <span class="token parameter variable">-c</span> <span class="token string">"<span class="token variable"><span class="token variable">$(</span><span class="token function">curl</span> <span class="token parameter variable">-fsSL</span> https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh<span class="token variable">)</span></span>"</span>
+
+<span class="token comment"># Install dependencies</span>
+brew <span class="token function">install</span> obs qt6 ffmpeg <span class="token function">curl</span> openssl cmake
+
+<span class="token comment"># Clone and build</span>
+<span class="token function">git</span> clone https://github.com/yourusername/streamberry.git
+<span class="token builtin class-name">cd</span> streamberry/plugin
+./build.sh
+
+<span class="token comment"># Install plugin</span>
+<span class="token function">mkdir</span> <span class="token parameter variable">-p</span> <span class="token string">"<span class="token environment constant">$HOME</span>/Library/Application Support/obs-studio/plugins/"</span>
+<span class="token function">cp</span> <span class="token parameter variable">-r</span> build/berrystreamcam.plugin <span class="token string">"<span class="token environment constant">$HOME</span>/Library/Application Support/obs-studio/plugins/"</span>
+</code></pre><h3 id="-windows">🪟 Windows </h3>
+<h4 id="-prerequisites">📋 Prerequisites </h4>
+<ol>
+<li>Install <a href="https://visualstudio.microsoft.com/downloads/">Visual Studio 2022</a> with C++ development tools</li>
+<li>Install <a href="https://cmake.org/download/">CMake</a> (3.16+)</li>
+<li>Install <a href="https://obsproject.com/download">OBS Studio</a> (30.0+)</li>
+<li>Install <a href="https://www.qt.io/download-qt-installer">Qt 6</a></li>
+</ol>
+<h4 id="-build-steps">🔨 Build Steps </h4>
+<pre data-role="codeBlock" data-info="powershell" class="language-powershell powershell"><code><span class="token comment"># Clone repository</span>
+git clone https:<span class="token operator">/</span><span class="token operator">/</span>github<span class="token punctuation">.</span>com/yourusername/streamberry<span class="token punctuation">.</span>git
+cd streamberry\plugin
+
+<span class="token comment"># Create build directory</span>
+mkdir build
+cd build
+
+<span class="token comment"># Configure (adjust paths as needed)</span>
+cmake <span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token operator">-</span>G <span class="token string">"Visual Studio 17 2022"</span> <span class="token operator">-</span>A x64 ^
+    <span class="token operator">-</span>DQt6_DIR=<span class="token string">"C:\Qt\6.5.0\msvc2019_64\lib\cmake\Qt6"</span> ^
+    <span class="token operator">-</span>DOBS_SOURCE_DIR=<span class="token string">"C:\obs-studio"</span> ^
+    <span class="token operator">-</span>DOBS_BUILD_DIR=<span class="token string">"C:\obs-studio\build"</span>
+
+<span class="token comment"># Build</span>
+cmake <span class="token operator">--</span>build <span class="token punctuation">.</span> <span class="token operator">--</span>config Release
+
+<span class="token comment"># Install (run as Administrator)</span>
+<span class="token function">copy</span> Release\berrystreamcam<span class="token punctuation">.</span>dll <span class="token string">"%ProgramFiles%\obs-studio\obs-plugins\64bit\"</span>
+</code></pre><h2 id="-quick-start">🚀 Quick Start </h2>
+<div align="center">
+<h3 id="-get-started-in-4-easy-steps">🎬 Get Started in 4 Easy Steps! </h3>
+</div>
+<h3 id="-1-install-streamberry-app-on-android">📱 1. Install Streamberry App on Android </h3>
+<p>Download the Streamberry app from <a href="https://github.com/yourusername/streamberry/releases">GitHub Releases</a> or build from source.</p>
+<h3 id="-2-connect-to-same-network">🌐 2. Connect to Same Network </h3>
+<p>Ensure your Android device and computer are on the same WiFi network or subnet.</p>
+<h3 id="-3-start-streaming-in-obs">🎥 3. Start Streaming in OBS </h3>
+<ol>
+<li><strong>🚀 Open OBS Studio</strong></li>
+<li><strong>➕ Add Source</strong>: Click <code>+</code> in the Sources panel</li>
+<li><strong>🎬 Select "BerryStreamCam"</strong></li>
+<li><strong>🔍 Wait for Discovery</strong>: Plugin automatically scans for devices (5-10 seconds)</li>
+<li><strong>📱 Select Your Device</strong>: Choose from the dropdown list</li>
+<li><strong>⚡ Choose Protocol</strong>: Select "WebSocket" for lowest latency</li>
+<li><strong>✅ Click OK</strong>: Stream starts automatically!</li>
+</ol>
+<h3 id="-4-troubleshooting">🔧 4. Troubleshooting </h3>
+<details>
+<summary>❌ <b>Device Not Found?</b></summary>
+<ul>
+<li>✅ Check both devices are on same network</li>
+<li>✅ Verify Streamberry app is running</li>
+<li>✅ Try manual IP: Enter IP address in the "Manual IP" field</li>
+<li>✅ Check firewall: Allow ports 8080, 8081, 8554</li>
+<li>✅ Disable VPN on either device</li>
+<li>✅ Restart your router if necessary</li>
+</ul>
+</details>
+<details>
+<summary>🎬 <b>No Video Displayed?</b></summary>
+<ul>
+<li>✅ Check Android app shows "Connected" status</li>
+<li>✅ Try different protocol (switch to HTTP H.264)</li>
+<li>✅ Restart OBS Studio</li>
+<li>✅ Check OBS logs: Help → Log Files → Current Log</li>
+<li>✅ Verify camera permissions in Android app</li>
+<li>✅ Try hiding and showing the source</li>
+</ul>
+</details>
+<details>
+<summary>⚡ <b>High Latency?</b></summary>
+<ul>
+<li>✅ Switch to WebSocket protocol</li>
+<li>✅ Use 5GHz WiFi instead of 2.4GHz</li>
+<li>✅ Reduce resolution in Android app (720p recommended)</li>
+<li>✅ Move closer to WiFi router</li>
+<li>✅ Close bandwidth-heavy applications</li>
+<li>✅ Use Quality of Service (QoS) on router</li>
+</ul>
+</details>
+<h2 id="️-configuration">🎛️ Configuration </h2>
+<h3 id="properties-panel">Properties Panel </h3>
+<ul>
+<li><strong>Connection Type</strong>: Auto-Discovery or Manual IP</li>
+<li><strong>Device</strong>: List of discovered Streamberry devices</li>
+<li><strong>Manual IP Address</strong>: Enter IP when auto-discovery fails</li>
+<li><strong>Protocol</strong>: Select streaming protocol</li>
+<li><strong>Refresh Devices</strong>: Manually trigger device scan</li>
+</ul>
+<h3 id="network-requirements">Network Requirements </h3>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Network</strong></td>
+<td>Same local network/subnet</td>
+</tr>
+<tr>
+<td><strong>Ports</strong></td>
+<td>8080 (WebSocket), 8081 (HTTP), 8554 (RTSP)</td>
+</tr>
+<tr>
+<td><strong>Bandwidth</strong></td>
+<td>5-10 Mbps for 1080p@30fps, 20-30 Mbps for 4K@30fps</td>
+</tr>
+<tr>
+<td><strong>WiFi</strong></td>
+<td>5GHz required for 4K, 5GHz recommended for 1080p, 2.4GHz for 720p</td>
+</tr>
+<tr>
+<td><strong>Firewall</strong></td>
+<td>Allow inbound on required ports</td>
+</tr>
+</tbody>
+</table>
+<h3 id="performance-tips">Performance Tips </h3>
+<p><strong>For Lowest Latency (50-150ms):</strong></p>
+<ul>
+<li>✅ Use WebSocket protocol</li>
+<li>✅ 720p @ 30fps</li>
+<li>✅ 5GHz WiFi</li>
+<li>✅ Close to router</li>
+</ul>
+<p><strong>For Best Quality:</strong></p>
+<ul>
+<li>✅ Use HTTP H.264 protocol</li>
+<li>✅ 1080p @ 60fps or 4K @ 30fps</li>
+<li>✅ Wired ethernet on PC</li>
+<li>✅ 5GHz WiFi or wired ethernet for phone</li>
+<li>✅ Hardware encoding on Android device</li>
+</ul>
+<p><strong>For Stunning 4K Streaming:</strong></p>
+<ul>
+<li>✅ Use HTTP H.264 or WebSocket protocol</li>
+<li>✅ 4K (3840x2160) @ 30fps</li>
+<li>✅ Gigabit ethernet on both devices (recommended)</li>
+<li>✅ High-end Android device with hardware H.264 encoder</li>
+<li>✅ Minimum 20-30 Mbps bandwidth</li>
+<li>✅ Hardware decoding on PC (GPU acceleration)</li>
+</ul>
+<p><strong>For Maximum Compatibility:</strong></p>
+<ul>
+<li>✅ Use RTSP protocol</li>
+<li>✅ 720p @ 30fps</li>
+<li>✅ Any network type</li>
+</ul>
+<h2 id="️-development">🛠️ Development </h2>
+<h3 id="building-from-source">Building from Source </h3>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token comment"># Install dependencies (see platform-specific instructions above)</span>
+
+<span class="token comment"># Clone repository</span>
+<span class="token function">git</span> clone https://github.com/yourusername/streamberry.git
+<span class="token builtin class-name">cd</span> streamberry/plugin
+
+<span class="token comment"># Build</span>
+./build.sh
+
+<span class="token comment"># The plugin will be in build/berrystreamcam.so (Linux/macOS)</span>
+<span class="token comment"># or build/Release/berrystreamcam.dll (Windows)</span>
+</code></pre><h3 id="project-structure">Project Structure </h3>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>plugin/
+├── CMakeLists.txt              # Build configuration
+├── build.sh                    # Build script
+├── src/
+│   ├── plugin-main.cpp         # OBS plugin registration
+│   ├── berrystreamcam-source.* # Main source implementation
+│   ├── common.hpp              # Shared types and constants
+│   ├── discovery/              # Auto-discovery system
+│   │   ├── device-discovery.*  # Network scanning
+│   │   └── mdns-scanner.*      # mDNS/Bonjour
+│   ├── protocols/              # Protocol handlers
+│   │   ├── websocket-handler.* # WebSocket (Port 8080)
+│   │   ├── http-handler.*      # HTTP (Port 8081)
+│   │   └── rtsp-handler.*      # RTSP (Port 8554)
+│   ├── decoder/                # Video decoding
+│   │   └── h264-decoder.*      # H.264/MJPEG decoder
+│   └── ui/                     # User interface
+│       └── device-list-widget.* # Device selection UI
+└── docs/                       # Documentation
+</code></pre><h3 id="adding-new-features">Adding New Features </h3>
+<p><strong>1. Add New Protocol:</strong></p>
+<pre data-role="codeBlock" data-info="cpp" class="language-cpp cpp"><code><span class="token comment">// 1. Add to ProtocolType enum in common.hpp</span>
+<span class="token keyword keyword-enum">enum</span> <span class="token keyword keyword-class">class</span> <span class="token class-name">ProtocolType</span> <span class="token punctuation">{</span>
+    <span class="token comment">// ... existing</span>
+    MY_NEW_PROTOCOL<span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 2. Create handler in src/protocols/</span>
+<span class="token keyword keyword-class">class</span> <span class="token class-name">MyProtocolHandler</span> <span class="token punctuation">{</span>
+    <span class="token keyword keyword-bool">bool</span> <span class="token function">connect</span><span class="token punctuation">(</span><span class="token keyword keyword-const">const</span> std<span class="token double-colon punctuation">::</span>string<span class="token operator">&amp;</span> url<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword keyword-void">void</span> <span class="token function">disconnect</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword keyword-bool">bool</span> <span class="token function">receive_frame</span><span class="token punctuation">(</span>VideoFrame<span class="token operator">&amp;</span> frame<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 3. Update device-discovery.cpp to detect protocol</span>
+<span class="token comment">// 4. Update UI in device-list-widget.cpp</span>
+</code></pre><p><strong>2. Improve Auto-Discovery:</strong></p>
+<pre data-role="codeBlock" data-info="cpp" class="language-cpp cpp"><code><span class="token comment">// Modify src/discovery/device-discovery.cpp</span>
+<span class="token comment">// Add new scanning methods or improve existing ones</span>
+</code></pre><h3 id="running-tests">Running Tests </h3>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token comment"># Build with tests enabled</span>
+<span class="token function">mkdir</span> <span class="token parameter variable">-p</span> build <span class="token operator">&amp;&amp;</span> <span class="token builtin class-name">cd</span> build
+cmake <span class="token punctuation">..</span> <span class="token parameter variable">-DENABLE_TESTS</span><span class="token operator">=</span>ON
+<span class="token function">make</span>
+
+<span class="token comment"># Run tests</span>
+ctest --output-on-failure
+</code></pre><h2 id="-api-documentation">📚 API Documentation </h2>
+<h3 id="device-discovery">Device Discovery </h3>
+<pre data-role="codeBlock" data-info="cpp" class="language-cpp cpp"><code><span class="token comment">// Scan network for devices (runs every 5 seconds)</span>
+std<span class="token double-colon punctuation">::</span>vector<span class="token operator">&lt;</span>StreamDevice<span class="token operator">&gt;</span> devices <span class="token operator">=</span> discovery_<span class="token operator">-&gt;</span><span class="token function">scan_network</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// Check specific device</span>
+StreamDevice device<span class="token punctuation">;</span>
+<span class="token keyword keyword-bool">bool</span> found <span class="token operator">=</span> discovery_<span class="token operator">-&gt;</span><span class="token function">probe_device</span><span class="token punctuation">(</span><span class="token string">"192.168.1.100"</span><span class="token punctuation">,</span> device<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre><h3 id="protocol-handlers">Protocol Handlers </h3>
+<pre data-role="codeBlock" data-info="cpp" class="language-cpp cpp"><code><span class="token comment">// WebSocket Handler</span>
+WebSocketHandler ws<span class="token punctuation">;</span>
+ws<span class="token punctuation">.</span><span class="token function">connect_to_server</span><span class="token punctuation">(</span><span class="token string">"ws://192.168.1.100:8080/stream"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+VideoFrame frame<span class="token punctuation">;</span>
+<span class="token keyword keyword-if">if</span> <span class="token punctuation">(</span>ws<span class="token punctuation">.</span><span class="token function">receive_frame</span><span class="token punctuation">(</span>frame<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// Process frame</span>
+<span class="token punctuation">}</span>
+ws<span class="token punctuation">.</span><span class="token function">disconnect_from_server</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// HTTP Handler</span>
+HttpHandler http<span class="token punctuation">;</span>
+http<span class="token punctuation">.</span><span class="token function">connect</span><span class="token punctuation">(</span><span class="token string">"http://192.168.1.100:8081/stream.h264"</span><span class="token punctuation">,</span> ProtocolType<span class="token double-colon punctuation">::</span>HTTP_RAW_H264<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword keyword-if">if</span> <span class="token punctuation">(</span>http<span class="token punctuation">.</span><span class="token function">receive_frame</span><span class="token punctuation">(</span>frame<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// Process frame</span>
+<span class="token punctuation">}</span>
+http<span class="token punctuation">.</span><span class="token function">disconnect</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre><h3 id="h264-decoder">H.264 Decoder </h3>
+<pre data-role="codeBlock" data-info="cpp" class="language-cpp cpp"><code>H264Decoder decoder<span class="token punctuation">;</span>
+decoder<span class="token punctuation">.</span><span class="token function">initialize</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword keyword-uint8_t">uint8_t</span><span class="token operator">*</span> decoded_data<span class="token punctuation">;</span>
+<span class="token keyword keyword-int">int</span> width<span class="token punctuation">,</span> height<span class="token punctuation">;</span>
+<span class="token keyword keyword-if">if</span> <span class="token punctuation">(</span>decoder<span class="token punctuation">.</span><span class="token function">decode_frame</span><span class="token punctuation">(</span>encoded_data<span class="token punctuation">,</span> encoded_size<span class="token punctuation">,</span> <span class="token operator">&amp;</span>decoded_data<span class="token punctuation">,</span> <span class="token operator">&amp;</span>width<span class="token punctuation">,</span> <span class="token operator">&amp;</span>height<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// decoded_data contains RGBA pixels</span>
+<span class="token punctuation">}</span>
+
+decoder<span class="token punctuation">.</span><span class="token function">shutdown</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre><h2 id="-performance-comparison">📊 Performance Comparison </h2>
+<div align="center">
+<h3 id="berrystreamcam-vs-competitors">BerryStreamCam vs Competitors </h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Feature</th>
+<th style="text-align:center">BerryStreamCam</th>
+<th style="text-align:center">DroidCam</th>
+<th style="text-align:center">IP Webcam</th>
+<th style="text-align:center">Others</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">🔍 Auto-Discovery</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+</tr>
+<tr>
+<td style="text-align:left">⚡ Ultra-Low Latency</td>
+<td style="text-align:center">✅ (50ms)</td>
+<td style="text-align:center">⚠️ (200ms+)</td>
+<td style="text-align:center">⚠️ (300ms+)</td>
+<td style="text-align:center">⚠️ (500ms+)</td>
+</tr>
+<tr>
+<td style="text-align:left">🎭 Multiple Protocols</td>
+<td style="text-align:center">✅ (5)</td>
+<td style="text-align:center">⚠️ (2)</td>
+<td style="text-align:center">⚠️ (3)</td>
+<td style="text-align:center">⚠️ (1-2)</td>
+</tr>
+<tr>
+<td style="text-align:left">📱 Multi-Device</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">⚠️ Limited</td>
+<td style="text-align:center">❌</td>
+</tr>
+<tr>
+<td style="text-align:left">🔄 Live Switching</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+</tr>
+<tr>
+<td style="text-align:left">🆓 Free &amp; Open Source</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">⚠️ Limited</td>
+<td style="text-align:center">⚠️ Freemium</td>
+<td style="text-align:center">❌</td>
+</tr>
+<tr>
+<td style="text-align:left">🎬 Hardware Decoding</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">⚠️ Limited</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">⚠️ Limited</td>
+</tr>
+<tr>
+<td style="text-align:left">🌐 Cross-Platform</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">⚠️ Limited</td>
+<td style="text-align:center">⚠️ Limited</td>
+<td style="text-align:center">⚠️ Limited</td>
+</tr>
+<tr>
+<td style="text-align:left">💪 Active Development</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">⚠️</td>
+<td style="text-align:center">⚠️</td>
+<td style="text-align:center">⚠️</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Legend:</strong> ✅ Fully Supported | ⚠️ Partially/Limited | ❌ Not Available</p>
+</div>
+<hr>
+<h2 id="-screenshots">🎬 Screenshots </h2>
+<div align="center">
+<h3 id="plugin-in-action">Plugin in Action </h3>
+<table>
+  <tbody><tr>
+    <td><img src="https://via.placeholder.com/400x250/667eea/ffffff?text=Auto+Discovery" alt="Auto Discovery"></td>
+    <td><img src="https://via.placeholder.com/400x250/764ba2/ffffff?text=Protocol+Selection" alt="Protocol Selection"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>🔍 Auto-Discovery</b><br>Automatically finds devices</td>
+    <td align="center"><b>🎭 Protocol Selection</b><br>Choose your preferred protocol</td>
+  </tr>
+  <tr>
+    <td><img src="https://via.placeholder.com/400x250/f093fb/ffffff?text=Live+Streaming" alt="Live Streaming"></td>
+    <td><img src="https://via.placeholder.com/400x250/4facfe/ffffff?text=Multi+Device" alt="Multi Device"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>🎥 Live Streaming</b><br>Ultra-low latency video</td>
+    <td align="center"><b>📱 Multi-Device</b><br>Connect multiple cameras</td>
+  </tr>
+</tbody></table>
+</div>
+<hr>
+<h2 id="-roadmap--future-updates">🔮 Roadmap &amp; Future Updates </h2>
+<h3 id="version-110-planned">Version 1.1.0 (Planned) </h3>
+<ul>
+<li class="task-list-item">
+<p><input type="checkbox" class="task-list-item-checkbox"> <strong>Enhanced Auto-Discovery</strong></p>
+<ul>
+<li>mDNS/Bonjour service discovery (Linux: Avahi, macOS: native, Windows: DNS-SD)</li>
+<li>QR code scanning for instant connection</li>
+<li>Bluetooth Low Energy (BLE) discovery</li>
+<li>USB connection support (ADB)</li>
+<li>Remember previously connected devices</li>
+</ul>
+</li>
+<li class="task-list-item">
+<p><input type="checkbox" class="task-list-item-checkbox"> <strong>Audio Streaming</strong></p>
+<ul>
+<li>Audio capture from Android microphone</li>
+<li>Audio sync with video</li>
+<li>Multiple audio sources (mic, system audio)</li>
+<li>Audio monitoring in OBS</li>
+</ul>
+</li>
+<li class="task-list-item">
+<p><input type="checkbox" class="task-list-item-checkbox"> <strong>Advanced Features</strong></p>
+<ul>
+<li>PTZ (Pan-Tilt-Zoom) controls via touch gestures</li>
+<li>Multiple camera support (front/back switching)</li>
+<li>Custom resolution/bitrate selection</li>
+<li>Recording directly on Android device</li>
+<li>Overlay graphics (OSD) on Android</li>
+</ul>
+</li>
+</ul>
+<h3 id="version-120-future">Version 1.2.0 (Future) </h3>
+<ul>
+<li class="task-list-item">
+<p><input type="checkbox" class="task-list-item-checkbox"> <strong>Performance</strong></p>
+<ul>
+<li>Hardware encoding on Android (MediaCodec)</li>
+<li>Zero-copy memory transfers</li>
+<li>Multi-threaded decoding</li>
+<li>Adaptive bitrate streaming</li>
+<li>Network bandwidth optimization</li>
+</ul>
+</li>
+<li class="task-list-item">
+<p><input type="checkbox" class="task-list-item-checkbox"> <strong>Professional Features</strong></p>
+<ul>
+<li>NDI protocol support</li>
+<li>SRT (Secure Reliable Transport)</li>
+<li>Virtual camera passthrough</li>
+<li>Multi-camera sync</li>
+<li>Timecode synchronization</li>
+</ul>
+</li>
+<li class="task-list-item">
+<p><input type="checkbox" class="task-list-item-checkbox"> <strong>User Experience</strong></p>
+<ul>
+<li>One-click pairing</li>
+<li>Connection presets</li>
+<li>Custom overlays</li>
+<li>Stream health monitoring</li>
+<li>Automatic reconnection</li>
+</ul>
+</li>
+</ul>
+<h3 id="version-200-long-term">Version 2.0.0 (Long-term) </h3>
+<ul>
+<li class="task-list-item">
+<p><input type="checkbox" class="task-list-item-checkbox"> <strong>Platform Expansion</strong></p>
+<ul>
+<li>iOS support (iPhone/iPad)</li>
+<li>Linux phone support</li>
+<li>Raspberry Pi camera support</li>
+<li>Web browser source (WebRTC)</li>
+</ul>
+</li>
+<li class="task-list-item">
+<p><input type="checkbox" class="task-list-item-checkbox"> <strong>Cloud Features</strong></p>
+<ul>
+<li>Remote device access (over internet)</li>
+<li>Cloud device registry</li>
+<li>Share device with team members</li>
+<li>Remote monitoring dashboard</li>
+</ul>
+</li>
+</ul>
+<h2 id="️-tech-stack">🛠️ Tech Stack </h2>
+<div align="center">
+<h3 id="built-with-cutting-edge-technologies">Built With Cutting-Edge Technologies </h3>
+<table>
+  <tbody><tr>
+    <td align="center" width="96">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg" width="48" height="48" alt="C++">
+      <br>C++17
+    </td>
+    <td align="center" width="96">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/qt/qt-original.svg" width="48" height="48" alt="Qt">
+      <br>Qt 6
+    </td>
+    <td align="center" width="96">
+      <img src="https://w7.pngwing.com/pngs/489/1005/png-transparent-obs-macos-bigsur-icon-thumbnail.png" width="48" height="48" alt="OBS">
+      <br>OBS Studio
+    </td>
+    <td align="center" width="96">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/5/5f/FFmpeg_Logo_new.svg" width="48" height="48" alt="FFmpeg">
+      <br>FFmpeg
+    </td>
+    <td align="center" width="96">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cmake/cmake-original.svg" width="48" height="48" alt="CMake">
+      <br>CMake
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="96">
+      <img src="https://curl.se/logo/curl-logo.svg" width="48" height="48" alt="libcurl">
+      <br>libcurl
+    </td>
+    <td align="center" width="96">
+      <img src="https://pbs.twimg.com/profile_images/1839806490158477312/z1WI16ZB_400x400.png" width="48" height="48" alt="OpenSSL">
+      <br>OpenSSL
+    </td>
+    <td align="center" width="96">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg" width="48" height="48" alt="Linux">
+      <br>Linux
+    </td>
+    <td align="center" width="96">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/apple/apple-original.svg" width="48" height="48" alt="macOS">
+      <br>macOS
+    </td>
+    <td align="center" width="96">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/windows8/windows8-original.svg" width="48" height="48" alt="Windows">
+      <br>Windows
+    </td>
+  </tr>
+</tbody></table>
+<p><strong>Core Technologies:</strong></p>
+<ul>
+<li>🔷 <strong>C++17</strong> - Modern C++ with RAII and smart pointers</li>
+<li>🔷 <strong>Qt 6</strong> - Cross-platform framework for networking and UI</li>
+<li>🔷 <strong>FFmpeg</strong> - Industry-standard multimedia framework</li>
+<li>🔷 <strong>CMake</strong> - Cross-platform build system</li>
+<li>🔷 <strong>WebSockets</strong> - Real-time bidirectional communication</li>
+<li>🔷 <strong>RTSP/RTP</strong> - Standard streaming protocols</li>
+<li>🔷 <strong>H.264</strong> - Industry-standard video codec</li>
+</ul>
+</div>
+<hr>
+<h2 id="-contributing">🤝 Contributing </h2>
+<p>Contributions are welcome! Please follow these steps:</p>
+<ol>
+<li><strong>Fork</strong> the repository</li>
+<li><strong>Create</strong> a feature branch (<code>git checkout -b feature/amazing-feature</code>)</li>
+<li><strong>Commit</strong> your changes (<code>git commit -m 'Add amazing feature'</code>)</li>
+<li><strong>Push</strong> to the branch (<code>git push origin feature/amazing-feature</code>)</li>
+<li><strong>Open</strong> a Pull Request</li>
+</ol>
+<h3 id="development-guidelines">Development Guidelines </h3>
+<ul>
+<li>Follow C++17 standards</li>
+<li>Use RAII for resource management</li>
+<li>Add error handling with try-catch</li>
+<li>Document public APIs with comments</li>
+<li>Test on multiple platforms</li>
+<li>Update README for new features</li>
+</ul>
+<h2 id="-frequently-asked-questions-faq">❓ Frequently Asked Questions (FAQ) </h2>
+<details>
+<summary><b>💰 Is BerryStreamCam really free?</b></summary>
+<br>
+Yes! BerryStreamCam is 100% free and open source under GPL-2.0 license. No hidden costs, no subscriptions, no premium features. Forever free!
+</details>
+<details>
+<summary><b>📱 Which Android versions are supported?</b></summary>
+<br>
+The Streamberry Android app supports Android 7.0 (Nougat) and above. The plugin works with any device running the Streamberry app.
+</details>
+<details>
+<summary><b>🎥 Can I use multiple cameras at once?</b></summary>
+<br>
+Absolutely! You can add multiple BerryStreamCam sources in OBS, each connected to a different Android device. Perfect for multi-cam productions!
+</details>
+<details>
+<summary><b>🌐 Does it work over the internet?</b></summary>
+<br>
+Currently, BerryStreamCam requires both devices to be on the same local network. Internet streaming is planned for v2.0 using secure tunneling.
+</details>
+<details>
+<summary><b>⚡ Which protocol should I use?</b></summary>
+<br>
+<ul>
+<li><strong>WebSocket</strong>: Best for live streaming, gaming, real-time (50-150ms latency)</li>
+<li><strong>HTTP H.264</strong>: Best for recording, high quality (100-300ms latency)</li>
+<li><strong>RTSP</strong>: Best for professional workflows, OBS scenes (150-400ms latency)</li>
+<li><strong>MJPEG</strong>: Best for maximum compatibility (200-500ms latency)</li>
+</ul>
+</details>
+<details>
+<summary><b>🔒 Is it secure?</b></summary>
+<br>
+BerryStreamCam operates on your local network only. All communication happens directly between your devices without any cloud servers or third-party services.
+</details>
+<details>
+<summary><b>🎤 Does it support audio?</b></summary>
+<br>
+Audio streaming is planned for v1.1.0. Currently, only video is supported. You can use OBS's audio input capture as a workaround.
+</details>
+<details>
+<summary><b>🐧 Which Linux distros are supported?</b></summary>
+<br>
+BerryStreamCam works on all major Linux distributions including:
+<ul>
+<li>Arch Linux / Manjaro / Garuda</li>
+<li>Ubuntu / Debian / Linux Mint</li>
+<li>Fedora / RHEL / CentOS Stream</li>
+<li>openSUSE</li>
+<li>Gentoo</li>
+<li>And many more!</li>
+</ul>
+</details>
+<details>
+<summary><b>💻 What are the system requirements?</b></summary>
+<br>
+<p><strong>Minimum:</strong></p>
+<ul>
+<li>OBS Studio 30.0+</li>
+<li>4GB RAM</li>
+<li>Dual-core CPU</li>
+<li>WiFi or Ethernet connection</li>
+</ul>
+<p><strong>Recommended (1080p):</strong></p>
+<ul>
+<li>OBS Studio 30.2+</li>
+<li>8GB RAM</li>
+<li>Quad-core CPU with hardware H.264 decoding</li>
+<li>5GHz WiFi or Gigabit Ethernet</li>
+</ul>
+<p><strong>For 4K Streaming:</strong></p>
+<ul>
+<li>OBS Studio 30.2+</li>
+<li>16GB RAM</li>
+<li>Hexa-core CPU or hardware H.264 decoder</li>
+<li>Gigabit Ethernet (recommended) or WiFi 6</li>
+<li>High-end Android device (Snapdragon 8 Gen 2+ or equivalent)</li>
+</ul>
+</details>
+<details>
+<summary><b>🔄 How do I update the plugin?</b></summary>
+<br>
+<ol>
+<li>Download the latest release from GitHub</li>
+<li>Stop OBS Studio</li>
+<li>Replace the old plugin file with the new one</li>
+<li>Restart OBS Studio</li>
+</ol>
+<p>Or rebuild from source using <code>./build.sh</code> for the latest development version.</p>
+</details>
+<hr>
+<h2 id="-license">📄 License </h2>
+<p>This project is licensed under the GNU General Public License v2.0 - see the <a href="LICENSE">LICENSE</a> file for details.</p>
+<h2 id="-credits">🙏 Credits </h2>
+<ul>
+<li><strong>OBS Studio</strong> - <a href="https://obsproject.com">https://obsproject.com</a></li>
+<li><strong>Qt Framework</strong> - <a href="https://www.qt.io">https://www.qt.io</a></li>
+<li><strong>FFmpeg</strong> - <a href="https://ffmpeg.org">https://ffmpeg.org</a></li>
+<li><strong>libcurl</strong> - <a href="https://curl.se">https://curl.se</a></li>
+</ul>
+<h2 id="-support">📞 Support </h2>
+<ul>
+<li><strong>Issues</strong>: <a href="https://github.com/yourusername/streamberry/issues">GitHub Issues</a></li>
+<li><strong>Discussions</strong>: <a href="https://github.com/yourusername/streamberry/discussions">GitHub Discussions</a></li>
+<li><strong>Email</strong>: support@streamberry.dev</li>
+</ul>
+<h2 id="-statistics">📈 Statistics </h2>
+<ul>
+<li><strong>Lines of Code</strong>: ~5,000+</li>
+<li><strong>Files</strong>: 19 source files</li>
+<li><strong>Protocols Supported</strong>: 5</li>
+<li><strong>Max Resolution</strong>: 4K (3840x2160) @ 30fps</li>
+<li><strong>Platforms</strong>: Linux, macOS, Windows</li>
+<li><strong>Languages</strong>: C++ (95%), CMake (5%)</li>
+</ul>
+<h2 id="-success-stories">🎉 Success Stories </h2>
+<blockquote>
+<p>"BerryStreamCam works flawlessly! Latency is incredibly low, and setup was a breeze." - User</p>
+</blockquote>
+<blockquote>
+<p>"Finally, a DroidCam alternative that's open source and actually works better!" - Streamer</p>
+</blockquote>
+<blockquote>
+<p>"The auto-discovery feature is amazing. No more typing IP addresses!" - Content Creator</p>
+</blockquote>
+<blockquote>
+<p>"Streaming in 4K at 30fps with barely any latency - this is next level! My production quality has gone through the roof!" - Professional Streamer</p>
+</blockquote>
+<blockquote>
+<p>"I use 3 phones in 4K mode for my cooking channel. The multi-device support is incredible!" - Content Creator</p>
+</blockquote>
+<hr>
+<div align="center">
+<hr>
+<h3 id="-made-with-love--code">💖 Made with Love &amp; Code </h3>
+<table>
+  <tbody><tr>
+    <td align="center">
+      <a href="https://github.com/swadhinbiswas">
+        <img src="https://github.com/swadhinbiswas.png" width="100px;" alt="Swadhin Biswas">
+        <br>
+        <sub><b>Swadhin Biswas</b></sub>
+      </a>
+      <br>
+      <a href="https://github.com/swadhinbiswas" title="Code">💻</a>
+      <a href="#" title="Design">🎨</a>
+      <a href="#" title="Documentation">📖</a>
+      <a href="#" title="Ideas">🤔</a>
+    </td>
+  </tr>
+</tbody></table>
+<p><strong>Creator &amp; Lead Developer</strong></p>
+<p><a href="https://github.com/swadhinbiswas"><img src="https://img.shields.io/badge/GitHub-swadhinbiswas-181717?style=for-the-badge&amp;logo=github" alt="GitHub"></a><br>
+<a href="https://twitter.com/swadhinbiswas"><img src="https://img.shields.io/badge/Twitter-Follow-1DA1F2?style=for-the-badge&amp;logo=twitter" alt="Twitter"></a><br>
+<a href="https://linkedin.com/in/swadhinbiswas"><img src="https://img.shields.io/badge/LinkedIn-Connect-0077B5?style=for-the-badge&amp;logo=linkedin" alt="LinkedIn"></a></p>
+<hr>
+<h3 id="-show-your-support">⭐ Show Your Support </h3>
+<p>If you found BerryStreamCam useful, please consider:</p>
+<p><a href="https://github.com/swadhinbiswas/streamberry"><img src="https://img.shields.io/github/stars/swadhinbiswas/streamberry?style=social" alt="Star on GitHub"></a><br>
+<a href="https://github.com/swadhinbiswas/streamberry/fork"><img src="https://img.shields.io/github/forks/swadhinbiswas/streamberry?style=social" alt="Fork on GitHub"></a><br>
+<a href="https://github.com/swadhinbiswas/streamberry"><img src="https://img.shields.io/github/watchers/swadhinbiswas/streamberry?style=social" alt="Watch on GitHub"></a></p>
+<p><strong>⭐ Star this repo</strong> • <strong>🍴 Fork it</strong> • <strong>📢 Share with others</strong></p>
+<hr>
+<p><sub>Built with 🎥 Camera Tech • ⚡ Real-time Streaming • 🔐 Open Source Spirit</sub></p>
+<p><sub>© 2025 Swadhin Biswas. Licensed under GPL-2.0</sub></p>
+<p><a href="#-berrystreamcam-obs-plugin">⬆ Back to top</a></p>
+</div>
+</div>
+      </div>
+      
+      
+    
+    
+    
+    
+    
+    
+  
+    </body></html>

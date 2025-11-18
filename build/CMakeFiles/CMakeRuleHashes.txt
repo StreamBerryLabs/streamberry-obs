@@ -1,0 +1,3 @@
+# Hashes of file build rules.
+97acbdffe4cf81f33135e7812f941533 CMakeFiles/berrystreamcam_autogen
+adf69c98e2b445e3ced59925ac9362f2 berrystreamcam_autogen/timestamp

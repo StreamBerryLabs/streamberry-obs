@@ -1,0 +1,11 @@
+[  0%] Built target berrystreamcam_autogen_timestamp_deps
+[  7%] Automatic MOC and UIC for target berrystreamcam
+[  7%] Built target berrystreamcam_autogen
+[ 15%] Building CXX object CMakeFiles/berrystreamcam.dir/src/plugin-main.cpp.o
+[ 23%] Building CXX object CMakeFiles/berrystreamcam.dir/berrystreamcam_autogen/mocs_compilation.cpp.o
+[ 30%] Building CXX object CMakeFiles/berrystreamcam.dir/src/protocols/websocket-handler.cpp.o
+[ 38%] Building CXX object CMakeFiles/berrystreamcam.dir/src/berrystreamcam-source.cpp.o
+[ 46%] Building CXX object CMakeFiles/berrystreamcam.dir/src/protocols/http-handler.cpp.o
+[ 53%] Building CXX object CMakeFiles/berrystreamcam.dir/src/protocols/rtsp-handler-ffmpeg.cpp.o
+[ 61%] Linking CXX shared module berrystreamcam.so
+[100%] Built target berrystreamcam
