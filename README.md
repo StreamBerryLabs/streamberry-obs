@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/swadhinbiswas/assets/main/image.png" alt="BerryStreamCam Logo" width="200"/>
+<img src="https://raw.githubusercontent.com/StreamBerryLabs/streamberry-obs/refs/heads/main/image.png" alt="BerryStreamCam Logo" width="200"/>
 
 ### 🎥 Transform Your Android Into a Pro Camera
 
@@ -119,6 +119,53 @@ cd streamberry-obs
 # Install plugin
 sudo cp build/berrystreamcam.so /usr/lib64/obs-plugins/
 ```
+
+#### 📦 Flatpak (All Linux Distributions)
+
+If you're using OBS Studio via Flatpak, use the dedicated Flatpak build:
+
+**Option 1: Using the build script (Recommended)**
+```bash
+# Clone repository
+git clone https://github.com/StreamBerryLabs/streamberry-obs.git
+cd streamberry-obs
+
+# Run Flatpak build script (handles everything automatically)
+./build-flatpak.sh
+```
+
+**Option 2: Manual Flatpak build**
+```bash
+# Install flatpak-builder
+sudo apt install flatpak-builder  # Ubuntu/Debian
+# or
+sudo dnf install flatpak-builder  # Fedora
+# or
+sudo pacman -S flatpak-builder    # Arch
+
+# Add Flathub repository
+flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+# Install OBS Studio Flatpak
+flatpak install flathub com.obsproject.Studio
+
+# Build and install plugin
+flatpak-builder --force-clean --install --user \
+    build-flatpak \
+    com.obsproject.Studio.Plugin.BerryStreamCam.json
+```
+
+**Option 3: Install from .flatpakref (when available)**
+```bash
+flatpak install berrystreamcam.flatpakref
+```
+
+**Flatpak Troubleshooting:**
+- ✅ Verify OBS Flatpak is installed: `flatpak list | grep obs`
+- ✅ Check plugin loads: `flatpak run com.obsproject.Studio --verbose`
+- ✅ Network permissions are automatically granted for WebSocket connections
+- ✅ Plugin location: `~/.var/app/com.obsproject.Studio/config/obs-studio/plugins/`
+- ✅ View logs: `journalctl --user -f | grep obs`
 
 ### 🍎 macOS
 

@@ -1,2 +1,0 @@
-set(__QT_DEPLOY_TARGET_berrystreamcam_FILE /home/swadhin/driodapp/streamberry/plugin/build/berrystreamcam.so)
-set(__QT_DEPLOY_TARGET_berrystreamcam_TYPE MODULE_LIBRARY)

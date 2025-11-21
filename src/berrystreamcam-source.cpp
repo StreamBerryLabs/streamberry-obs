@@ -106,6 +106,11 @@ BerryStreamCamSource::BerryStreamCamSource(obs_data_t *settings, obs_source_t *s
     decoder_ = std::make_unique<H264Decoder>();
     decoder_->initialize();
 
+    // Initialize handlers in main thread (Qt requirement)
+    ws_handler_ = std::make_unique<WebSocketHandler>();
+    http_handler_ = std::make_unique<HttpHandler>();
+    // rtsp_handler_ = std::make_unique<RtspHandler>();  // Coming soon
+
     // Set active flag so discovery thread runs
     active_ = true;
 
@@ -600,43 +605,46 @@ void BerryStreamCamSource::streaming_thread_impl()
     bool connection_success = false;
     ProtocolType attempted_protocol = config_.protocol;
 
-    // Initialize appropriate handler based on protocol
+    // Connect using appropriate handler based on protocol
+    // Handlers are already created in main thread (constructor)
     try {
         switch (config_.protocol) {
             case ProtocolType::WEBSOCKET_OBS_DROID:
-                // Reuse existing handler if available
-                if (!ws_handler_) {
-                    ws_handler_ = std::make_unique<WebSocketHandler>();
-                }
-                if (!ws_handler_->connect_to_server(config_.stream_url)) {
-                    BLOG_ERROR("Failed to connect via WebSocket");
+                if (ws_handler_) {
+                    if (!ws_handler_->connect_to_server(config_.stream_url)) {
+                        BLOG_ERROR("Failed to connect via WebSocket");
+                    } else {
+                        connection_success = true;
+                    }
                 } else {
-                    connection_success = true;
+                    BLOG_ERROR("WebSocket handler not initialized");
                 }
                 break;
 
             /* RTSP - Coming Soon
             case ProtocolType::RTSP:
-                rtsp_handler_ = std::make_unique<RtspHandler>();
-                if (!rtsp_handler_->connect(config_.stream_url)) {
-                    BLOG_ERROR("Failed to connect via RTSP");
-                    rtsp_handler_.reset();
+                if (rtsp_handler_) {
+                    if (!rtsp_handler_->connect(config_.stream_url)) {
+                        BLOG_ERROR("Failed to connect via RTSP");
+                    } else {
+                        connection_success = true;
+                    }
                 } else {
-                    connection_success = true;
+                    BLOG_ERROR("RTSP handler not initialized");
                 }
                 break;
             */
 
             case ProtocolType::HTTP_RAW_H264:
             case ProtocolType::HTTP_MJPEG:
-                // Reuse existing handler if available
-                if (!http_handler_) {
-                    http_handler_ = std::make_unique<HttpHandler>();
-                }
-                if (!http_handler_->connect(config_.stream_url, config_.protocol)) {
-                    BLOG_ERROR("Failed to connect via HTTP");
+                if (http_handler_) {
+                    if (!http_handler_->connect(config_.stream_url, config_.protocol)) {
+                        BLOG_ERROR("Failed to connect via HTTP");
+                    } else {
+                        connection_success = true;
+                    }
                 } else {
-                    connection_success = true;
+                    BLOG_ERROR("HTTP handler not initialized");
                 }
                 break;
 
@@ -692,28 +700,31 @@ void BerryStreamCamSource::streaming_thread_impl()
             std::string url = config_.device_ip.empty() ? "192.168.110.10" : config_.device_ip;
 
             if (config_.protocol == ProtocolType::WEBSOCKET_OBS_DROID) {
-                // Only reconnect if handler exists (don't create in streaming thread - Qt issue)
                 if (ws_handler_ && !ws_handler_->is_connected()) {
                     std::string ws_url = "ws://" + url + ":8080/stream";
-                    ws_handler_->connect_to_server(ws_url);
+                    if (!ws_handler_->connect_to_server(ws_url)) {
+                        BLOG_ERROR("Failed to reconnect WebSocket");
+                    }
                 } else if (!ws_handler_) {
-                    BLOG_WARNING("WebSocket handler not available for reconnect, need restart");
+                    BLOG_ERROR("WebSocket handler not initialized");
                 }
             } else if (config_.protocol == ProtocolType::HTTP_RAW_H264) {
-                // Only reconnect if handler exists
                 if (http_handler_ && !http_handler_->is_connected()) {
                     std::string http_url = "http://" + url + ":8081/stream.h264";
-                    http_handler_->connect(http_url, ProtocolType::HTTP_RAW_H264);
+                    if (!http_handler_->connect(http_url, ProtocolType::HTTP_RAW_H264)) {
+                        BLOG_ERROR("Failed to reconnect HTTP");
+                    }
                 } else if (!http_handler_) {
-                    BLOG_WARNING("HTTP handler not available for reconnect, need restart");
+                    BLOG_ERROR("HTTP handler not initialized");
                 }
             } else if (config_.protocol == ProtocolType::HTTP_MJPEG) {
-                // Only reconnect if handler exists
                 if (http_handler_ && !http_handler_->is_connected()) {
                     std::string mjpeg_url = "http://" + url + ":8081/mjpeg";
-                    http_handler_->connect(mjpeg_url, ProtocolType::HTTP_MJPEG);
+                    if (!http_handler_->connect(mjpeg_url, ProtocolType::HTTP_MJPEG)) {
+                        BLOG_ERROR("Failed to reconnect MJPEG");
+                    }
                 } else if (!http_handler_) {
-                    BLOG_WARNING("HTTP handler not available for reconnect, need restart");
+                    BLOG_ERROR("HTTP handler not initialized");
                 }
             }
             last_state = StreamState::STREAMING;
@@ -727,12 +738,8 @@ void BerryStreamCamSource::streaming_thread_impl()
 
         VideoFrame frame = {};
 
-        // Process Qt events if using WebSocket (needed for Qt signals)
-        if (config_.protocol == ProtocolType::WEBSOCKET_OBS_DROID && ws_handler_) {
-            ws_handler_->process_events();
-        }
-
         // Receive frame from active handler based on current protocol
+        // Note: No need to call process_events() - WebSocket now uses dedicated thread
         bool got_frame = false;
         if (config_.protocol == ProtocolType::WEBSOCKET_OBS_DROID && ws_handler_) {
             got_frame = ws_handler_->receive_frame(frame);

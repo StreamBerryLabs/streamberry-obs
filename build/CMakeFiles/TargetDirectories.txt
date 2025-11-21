@@ -1,9 +1,0 @@
-/home/swadhin/driodapp/streamberry/plugin/build/CMakeFiles/berrystreamcam.dir
-/home/swadhin/driodapp/streamberry/plugin/build/CMakeFiles/edit_cache.dir
-/home/swadhin/driodapp/streamberry/plugin/build/CMakeFiles/rebuild_cache.dir
-/home/swadhin/driodapp/streamberry/plugin/build/CMakeFiles/list_install_components.dir
-/home/swadhin/driodapp/streamberry/plugin/build/CMakeFiles/install.dir
-/home/swadhin/driodapp/streamberry/plugin/build/CMakeFiles/install/local.dir
-/home/swadhin/driodapp/streamberry/plugin/build/CMakeFiles/install/strip.dir
-/home/swadhin/driodapp/streamberry/plugin/build/CMakeFiles/berrystreamcam_autogen_timestamp_deps.dir
-/home/swadhin/driodapp/streamberry/plugin/build/CMakeFiles/berrystreamcam_autogen.dir

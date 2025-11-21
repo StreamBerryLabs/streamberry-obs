@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../common.hpp"
+#include "frame-queue.hpp"
 #include <QWebSocket>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -11,9 +12,6 @@
 #include <string>
 #include <memory>
 #include <atomic>
-#include <queue>
-#include <mutex>
-#include <condition_variable>
 
 namespace berrystreamcam {
 
@@ -31,29 +29,37 @@ public:
     bool receive_frame(VideoFrame& frame);
     void process_events(); // Process Qt events in the streaming thread
 
-private:
-    void cleanup_websocket();
+signals:
+    // Signals for cross-thread communication
+    void connectRequested(const QString& url);
+    void disconnectRequested();
+    void frameReady(const VideoFrame& frame);
+    void connectionStateChanged(bool connected);
+    void errorOccurred(const QString& error);
 
 private slots:
-    void on_connected();
-    void on_disconnected();
-    void on_text_message_received(const QString& message);
-    void on_error_occurred(QAbstractSocket::SocketError error);
+    // Slots executed in WebSocket worker thread
+    void doConnect(const QString& url);
+    void doDisconnect();
+    void onConnected();
+    void onDisconnected();
+    void onTextMessageReceived(const QString& message);
+    void onError(QAbstractSocket::SocketError error);
 
 private:
+    void cleanup_websocket();
     void handle_video_frame(const QJsonObject& json);
     void handle_hello_message(const QJsonObject& json);
     QByteArray decode_base64(const QString& base64_str);
 
-    std::unique_ptr<QWebSocket> websocket_;
+    QWebSocket* websocket_;              // Created in main thread, moved to worker
+    QThread* worker_thread_;             // Dedicated thread for Qt event loop
     std::string url_;
 
     std::atomic<bool> connected_;
     std::atomic<bool> connection_attempted_;
     std::atomic<bool> cleanup_started_;
-    std::queue<VideoFrame> frame_queue_;
-    std::mutex queue_mutex_;
-    std::condition_variable frame_cv_;
+    FrameQueue frame_queue_;             // Thread-safe frame queue
 
     int frame_count_;
     int keyframe_count_;

@@ -3,69 +3,111 @@
 #include <QJsonArray>
 #include <QMetaObject>
 #include <cstring>
+#include <chrono>
+#include <thread>
 
 namespace berrystreamcam {
 
 WebSocketHandler::WebSocketHandler()
     : websocket_(nullptr)
+    , worker_thread_(nullptr)
     , connected_(false)
     , connection_attempted_(false)
     , cleanup_started_(false)
     , frame_count_(0)
     , keyframe_count_(0)
 {
+    BLOG_INFO("WebSocket handler created in thread %p", QThread::currentThread());
+
     // Create websocket in main thread context
-    websocket_ = std::make_unique<QWebSocket>();
+    websocket_ = new QWebSocket();
 
-    // Connect Qt signals (using QObject::connect, not our connect method)
-    QObject::connect(websocket_.get(), &QWebSocket::connected,
-                     this, &WebSocketHandler::on_connected);
-    QObject::connect(websocket_.get(), &QWebSocket::disconnected,
-                     this, &WebSocketHandler::on_disconnected);
-    QObject::connect(websocket_.get(), &QWebSocket::textMessageReceived,
-                     this, &WebSocketHandler::on_text_message_received);
-    QObject::connect(websocket_.get(), &QWebSocket::errorOccurred,
-                     this, &WebSocketHandler::on_error_occurred);
+    // Create worker thread
+    worker_thread_ = new QThread(this);
 
-    BLOG_INFO("WebSocket handler created");
+    // Move websocket to worker thread
+    websocket_->moveToThread(worker_thread_);
+
+    // Connect cross-thread signals (queued connections for thread safety)
+    QObject::connect(this, &WebSocketHandler::connectRequested,
+                     this, &WebSocketHandler::doConnect,
+                     Qt::QueuedConnection);
+
+    QObject::connect(this, &WebSocketHandler::disconnectRequested,
+                     this, &WebSocketHandler::doDisconnect,
+                     Qt::QueuedConnection);
+
+    // Connect WebSocket signals to our slots (queued for cross-thread)
+    QObject::connect(websocket_, &QWebSocket::connected,
+                     this, &WebSocketHandler::onConnected,
+                     Qt::QueuedConnection);
+
+    QObject::connect(websocket_, &QWebSocket::disconnected,
+                     this, &WebSocketHandler::onDisconnected,
+                     Qt::QueuedConnection);
+
+    QObject::connect(websocket_, &QWebSocket::textMessageReceived,
+                     this, &WebSocketHandler::onTextMessageReceived,
+                     Qt::QueuedConnection);
+
+    QObject::connect(websocket_, &QWebSocket::errorOccurred,
+                     this, &WebSocketHandler::onError,
+                     Qt::QueuedConnection);
+
+    // Start worker thread with event loop
+    worker_thread_->start();
+
+    BLOG_INFO("WebSocket worker thread started");
 }
 
 WebSocketHandler::~WebSocketHandler()
 {
+    BLOG_INFO("WebSocket handler destructor called");
+
     // Set cleanup flag FIRST to stop all callbacks
-    cleanup_started_ = true;
-    connected_ = false;
+    cleanup_started_.store(true);
+    connected_.store(false);
 
     try {
-        // Clear frame queue first
-        {
-            std::lock_guard<std::mutex> lock(queue_mutex_);
-            while (!frame_queue_.empty()) {
-                if (frame_queue_.front().data) {
-                    delete[] frame_queue_.front().data;
+        // Request disconnect from worker thread
+        emit disconnectRequested();
+
+        // Wait for worker thread to finish (with timeout)
+        if (worker_thread_ && worker_thread_->isRunning()) {
+            BLOG_DEBUG("Waiting for worker thread to stop...");
+            if (!worker_thread_->wait(2000)) {
+                BLOG_WARNING("Worker thread did not stop within timeout, forcing quit");
+                worker_thread_->quit();
+                if (!worker_thread_->wait(1000)) {
+                    BLOG_ERROR("Worker thread still running after forced quit");
                 }
-                frame_queue_.pop();
             }
         }
 
-        // Clean up websocket without any Qt calls
-        if (websocket_) {
-            // Block all signals immediately
-            websocket_->blockSignals(true);
+        // Clear frame queue
+        frame_queue_.clear();
 
-            // Delete the websocket directly
-            websocket_.reset();
+        // Delete WebSocket (safe now that thread is stopped)
+        if (websocket_) {
+            delete websocket_;
+            websocket_ = nullptr;
         }
+
+        BLOG_INFO("WebSocket handler destroyed");
 
     } catch (...) {
         // Suppress all exceptions in destructor
-        websocket_.reset();
+        BLOG_ERROR("Exception in WebSocketHandler destructor");
+        if (websocket_) {
+            delete websocket_;
+            websocket_ = nullptr;
+        }
     }
 }
 
 bool WebSocketHandler::connect_to_server(const std::string& url)
 {
-    if (cleanup_started_) {
+    if (cleanup_started_.load()) {
         return false;
     }
 
@@ -79,86 +121,64 @@ bool WebSocketHandler::connect_to_server(const std::string& url)
         return false;
     }
 
-    // If websocket is in a bad state, recreate it
-    if (!websocket_ || websocket_->state() == QAbstractSocket::ClosingState) {
-        BLOG_DEBUG("Recreating WebSocket");
-        websocket_.reset();
-        websocket_ = std::make_unique<QWebSocket>();
+    connection_attempted_.store(false);
+    connected_.store(false);
 
-        // Reconnect Qt signals
-        QObject::connect(websocket_.get(), &QWebSocket::connected,
-                         this, &WebSocketHandler::on_connected);
-        QObject::connect(websocket_.get(), &QWebSocket::disconnected,
-                         this, &WebSocketHandler::on_disconnected);
-        QObject::connect(websocket_.get(), &QWebSocket::textMessageReceived,
-                         this, &WebSocketHandler::on_text_message_received);
-        QObject::connect(websocket_.get(), &QWebSocket::errorOccurred,
-                         this, &WebSocketHandler::on_error_occurred);
+    // Emit signal to worker thread to connect
+    emit connectRequested(QString::fromStdString(url));
+
+    // Wait for connection with timeout using sleep and polling
+    // This avoids creating QEventLoop in streaming thread
+    int timeout_ms = 5000;
+    int elapsed_ms = 0;
+    int poll_interval_ms = 50;
+
+    while (elapsed_ms < timeout_ms && !connection_attempted_.load()) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(poll_interval_ms));
+        elapsed_ms += poll_interval_ms;
     }
 
-    connection_attempted_ = false;
-    connected_ = false;
-
-    // Create a local event loop to wait for connection
-    QEventLoop loop;
-    QTimer timeout;
-    timeout.setSingleShot(true);
-    timeout.setInterval(5000); // 5 second timeout
-
-    // Connect signals to event loop
-    QObject::connect(websocket_.get(), &QWebSocket::connected, &loop, &QEventLoop::quit);
-    QObject::connect(websocket_.get(), &QWebSocket::errorOccurred, &loop, &QEventLoop::quit);
-    QObject::connect(&timeout, &QTimer::timeout, &loop, &QEventLoop::quit);
-
-    // Start connection and timeout
-    websocket_->open(qurl);
-    timeout.start();
-
-    // Wait for connection or timeout
-    loop.exec();
-
-    if (!connected_) {
+    if (!connected_.load()) {
         BLOG_ERROR("WebSocket connection timeout or failed");
     }
 
-    return connected_;
+    return connected_.load();
 }
 
 void WebSocketHandler::process_events()
 {
+    if (cleanup_started_.load()) {
+        return;
+    }
+
     // Process Qt events to handle incoming WebSocket messages
     QCoreApplication::processEvents();
 }
 
 void WebSocketHandler::disconnect_from_server()
 {
-    if (!websocket_ || cleanup_started_) return;
+    if (cleanup_started_.load()) return;
 
     BLOG_INFO("Disconnecting WebSocket");
 
-    connected_ = false;
+    connected_.store(false);
 
-    // Abort connection immediately
-    try {
-        if (websocket_->state() != QAbstractSocket::UnconnectedState) {
-            websocket_->blockSignals(true);
-            websocket_->abort();
-        }
-    } catch (...) {
-        // Ignore all errors
+    // Emit signal to worker thread to disconnect
+    emit disconnectRequested();
+
+    // Wait for disconnection with timeout using sleep and polling
+    // This avoids creating QEventLoop in streaming thread
+    int timeout_ms = 2000;
+    int elapsed_ms = 0;
+    int poll_interval_ms = 50;
+
+    while (elapsed_ms < timeout_ms && connected_.load()) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(poll_interval_ms));
+        elapsed_ms += poll_interval_ms;
     }
 
     // Clear frame queue
-    {
-        std::lock_guard<std::mutex> lock(queue_mutex_);
-        while (!frame_queue_.empty()) {
-            VideoFrame& frame = frame_queue_.front();
-            if (frame.data) {
-                delete[] frame.data;
-            }
-            frame_queue_.pop();
-        }
-    }
+    frame_queue_.clear();
 
     BLOG_INFO("WebSocket disconnected (processed %d frames, %d keyframes)",
               frame_count_, keyframe_count_);
@@ -169,49 +189,119 @@ void WebSocketHandler::cleanup_websocket()
     // This method is now unused but kept for compatibility
     if (websocket_) {
         websocket_->blockSignals(true);
-        websocket_.reset();
+        delete websocket_;
+        websocket_ = nullptr;
     }
 }
 
 bool WebSocketHandler::is_connected() const
 {
-    return connected_;
+    return connected_.load();
 }
 
 bool WebSocketHandler::receive_frame(VideoFrame& frame)
 {
-    if (cleanup_started_) {
+    if (cleanup_started_.load()) {
         return false;
     }
 
-    std::lock_guard<std::mutex> lock(queue_mutex_);
-
-    if (frame_queue_.empty()) {
-        return false;
-    }
-
-    frame = frame_queue_.front();
-    frame_queue_.pop();
-
-    return true;
+    return frame_queue_.pop(frame);
 }
 
-void WebSocketHandler::on_connected()
+void WebSocketHandler::doConnect(const QString& url)
 {
+    if (cleanup_started_.load()) {
+        BLOG_DEBUG("doConnect: cleanup in progress, aborting");
+        return;
+    }
+
+    BLOG_INFO("doConnect called in thread %p", QThread::currentThread());
+
+    QUrl qurl(url);
+    if (!qurl.isValid()) {
+        BLOG_ERROR("Invalid WebSocket URL in doConnect");
+        emit connectionStateChanged(false);
+        emit errorOccurred("Invalid URL");
+        return;
+    }
+
+    // If websocket is in a bad state, recreate it
+    if (websocket_->state() == QAbstractSocket::ClosingState) {
+        BLOG_DEBUG("WebSocket in closing state, waiting...");
+        // Wait a bit for it to close
+        QThread::msleep(100);
+    }
+
+    if (websocket_->state() != QAbstractSocket::UnconnectedState) {
+        BLOG_WARNING("WebSocket not in unconnected state, aborting previous connection");
+        websocket_->abort();
+    }
+
+    // Open connection from worker thread
+    websocket_->open(qurl);
+    BLOG_DEBUG("WebSocket open() called");
+}
+
+void WebSocketHandler::onConnected()
+{
+    if (cleanup_started_.load()) {
+        return;
+    }
+
     BLOG_INFO("WebSocket connected successfully");
-    connected_ = true;
-    connection_attempted_ = true;
+    connected_.store(true);
+    connection_attempted_.store(true);
+    emit connectionStateChanged(true);
 }
 
-void WebSocketHandler::on_disconnected()
+void WebSocketHandler::doDisconnect()
 {
+    BLOG_INFO("doDisconnect called in thread %p", QThread::currentThread());
+
+    if (cleanup_started_.load()) {
+        BLOG_DEBUG("doDisconnect: cleanup in progress, continuing with disconnect");
+    }
+
+    if (!websocket_) {
+        BLOG_DEBUG("doDisconnect: websocket is null");
+        emit connectionStateChanged(false);
+        return;
+    }
+
+    // Block signals before calling close to prevent recursive calls
+    websocket_->blockSignals(true);
+
+    // Close the connection from worker thread
+    if (websocket_->state() != QAbstractSocket::UnconnectedState) {
+        BLOG_DEBUG("Closing WebSocket connection");
+        websocket_->close();
+    }
+
+    // Unblock signals
+    websocket_->blockSignals(false);
+
+    connected_.store(false);
+    emit connectionStateChanged(false);
+}
+
+void WebSocketHandler::onDisconnected()
+{
+    if (cleanup_started_.load()) {
+        return;
+    }
+
     BLOG_INFO("WebSocket disconnected");
-    connected_ = false;
+    connected_.store(false);
+    
+    // Clear pending frames
+    frame_queue_.clear();
+    
+    emit connectionStateChanged(false);
 }
 
-void WebSocketHandler::on_text_message_received(const QString& message)
+void WebSocketHandler::onTextMessageReceived(const QString& message)
 {
-    if (cleanup_started_ || !connected_) {
+    if (cleanup_started_.load() || !connected_.load()) {
         return;
     }
 
@@ -237,24 +327,35 @@ void WebSocketHandler::on_text_message_received(const QString& message)
     }
 }
 
-void WebSocketHandler::on_error_occurred(QAbstractSocket::SocketError error)
+void WebSocketHandler::onError(QAbstractSocket::SocketError error)
 {
-    if (cleanup_started_) {
+    if (cleanup_started_.load()) {
         return;
     }
 
+    QString errorString;
     if (websocket_) {
-        QString errorString = websocket_->errorString();
+        errorString = websocket_->errorString();
         BLOG_ERROR("WebSocket error %d: %s",
                    static_cast<int>(error),
                    errorString.toStdString().c_str());
+    } else {
+        errorString = "WebSocket is null";
+        BLOG_ERROR("WebSocket error %d: WebSocket is null", static_cast<int>(error));
     }
-    connected_ = false;
-    connection_attempted_ = true;
+
+    connected_.store(false);
+    connection_attempted_.store(true);
+    emit connectionStateChanged(false);
+    emit errorOccurred(errorString);
 }
 
 void WebSocketHandler::handle_hello_message(const QJsonObject& json)
 {
+    if (cleanup_started_.load()) {
+        return;
+    }
+
     QString version = json["version"].toString();
     QString client = json["client"].toString();
 
@@ -282,7 +383,7 @@ void WebSocketHandler::handle_hello_message(const QJsonObject& json)
 
 void WebSocketHandler::handle_video_frame(const QJsonObject& json)
 {
-    if (cleanup_started_) {
+    if (cleanup_started_.load()) {
         return;
     }
 
@@ -307,39 +408,54 @@ void WebSocketHandler::handle_video_frame(const QJsonObject& json)
         return;
     }
 
-    // Create VideoFrame
+    // Create VideoFrame with memory allocation error handling
     VideoFrame frame = {};
-    frame.data = new uint8_t[decoded.size()];
-    frame.size = decoded.size();
-    frame.timestamp = timestamp;
-    frame.pts = pts;
-    frame.dts = dts;
-    frame.is_keyframe = is_keyframe;
+    try {
+        frame.data = new uint8_t[decoded.size()];
+        frame.size = decoded.size();
+        frame.timestamp = timestamp;
+        frame.pts = pts;
+        frame.dts = dts;
+        frame.is_keyframe = is_keyframe;
 
-    memcpy(frame.data, decoded.data(), decoded.size());
+        memcpy(frame.data, decoded.data(), decoded.size());
 
-    // Add to queue with size limit
-    {
-        std::lock_guard<std::mutex> lock(queue_mutex_);
-
-        // Limit queue to 30 frames
-        while (frame_queue_.size() >= 30) {
-            VideoFrame& old = frame_queue_.front();
-            delete[] old.data;
-            frame_queue_.pop();
+        // Add to thread-safe queue (automatically handles size limit)
+        frame_queue_.push(std::move(frame));
+    } catch (const std::bad_alloc& e) {
+        BLOG_ERROR("Failed to allocate memory for frame (%zu bytes): %s",
+                   decoded.size(), e.what());
+        // Clean up if allocation succeeded but something else failed
+        if (frame.data) {
+            delete[] frame.data;
+            frame.data = nullptr;
         }
-
-        frame_queue_.push(frame);
+        // Skip this frame and continue streaming
+        return;
+    } catch (const std::exception& e) {
+        BLOG_ERROR("Exception while processing frame: %s", e.what());
+        // Clean up
+        if (frame.data) {
+            delete[] frame.data;
+            frame.data = nullptr;
+        }
+        return;
     }
 
     frame_count_++;
     if (is_keyframe) {
         keyframe_count_++;
-        BLOG_INFO("🔑 Keyframe #%d received (%zu bytes, seq=%d)",
-                  keyframe_count_, frame.size, sequence);
+        BLOG_INFO("🔑 Keyframe #%d received (%zu bytes, seq=%d, queue=%zu)",
+                  keyframe_count_, frame.size, sequence, frame_queue_.size());
     } else if (frame_count_ % 60 == 0) {
-        BLOG_DEBUG("Frame #%d received (%zu bytes, seq=%d)",
-                   frame_count_, frame.size, sequence);
+        BLOG_DEBUG("Frame #%d received (%zu bytes, seq=%d, queue=%zu)",
+                   frame_count_, frame.size, sequence, frame_queue_.size());
+    }
+    
+    // Log performance metrics every 300 frames (~10 seconds at 30fps)
+    if (frame_count_ % 300 == 0) {
+        BLOG_INFO("Performance: %d frames processed, %d keyframes, queue size: %zu",
+                  frame_count_, keyframe_count_, frame_queue_.size());
     }
 }
 

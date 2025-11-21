@@ -67,6 +67,7 @@ set(PLUGIN_SOURCES
     src/discovery/device-discovery.cpp
     src/discovery/mdns-scanner.cpp
     src/protocols/websocket-handler.cpp
+    src/protocols/frame-queue.cpp
     src/protocols/rtsp-handler-ffmpeg.cpp
     src/protocols/http-handler.cpp
     src/decoder/h264-decoder.cpp
@@ -78,6 +79,7 @@ set(PLUGIN_HEADERS
     src/discovery/device-discovery.hpp
     src/discovery/mdns-scanner.hpp
     src/protocols/websocket-handler.hpp
+    src/protocols/frame-queue.hpp
     src/protocols/rtsp-handler.hpp
     src/protocols/http-handler.hpp
     src/decoder/h264-decoder.hpp
@@ -125,6 +127,34 @@ elseif(UNIX)
     target_compile_definitions(berrystreamcam PRIVATE __linux__)
 endif()
 
+# Detect Flatpak build environment
+if(DEFINED ENV{FLATPAK_ID})
+    message(STATUS "Building for Flatpak")
+    set(FLATPAK_BUILD ON)
+    
+    # Use Flatpak paths
+    set(CMAKE_INSTALL_PREFIX "/app")
+    set(OBS_PLUGIN_DESTINATION "lib/obs-plugins")
+    set(OBS_DATA_DESTINATION "share/obs/obs-plugins/${PROJECT_NAME}")
+else()
+    set(FLATPAK_BUILD OFF)
+    
+    # Use system paths
+    if(NOT DEFINED OBS_PLUGIN_DESTINATION)
+        set(OBS_PLUGIN_DESTINATION "${CMAKE_INSTALL_LIBDIR}/obs-plugins")
+    endif()
+    if(NOT DEFINED OBS_DATA_DESTINATION)
+        set(OBS_DATA_DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/obs/obs-plugins/${PROJECT_NAME}")
+    endif()
+endif()
+
+# Optional: Build tests
+option(BUILD_TESTS "Build unit and integration tests" OFF)
+
+if(BUILD_TESTS)
+    add_subdirectory(tests)
+endif()
+
 # Installation
 if(WIN32)
     install(TARGETS berrystreamcam
@@ -134,6 +164,11 @@ elseif(APPLE)
     install(TARGETS berrystreamcam
         LIBRARY DESTINATION "$ENV{HOME}/Library/Application Support/obs-studio/plugins/"
     )
+elseif(FLATPAK_BUILD)
+    install(TARGETS berrystreamcam
+        LIBRARY DESTINATION ${OBS_PLUGIN_DESTINATION}
+    )
+    message(STATUS "Flatpak install destination: ${CMAKE_INSTALL_PREFIX}/${OBS_PLUGIN_DESTINATION}")
 else()
     install(TARGETS berrystreamcam
         LIBRARY DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/obs-plugins"
